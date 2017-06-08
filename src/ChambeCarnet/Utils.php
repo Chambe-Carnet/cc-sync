@@ -38,7 +38,7 @@ class Utils
     
     /**
      * Parse particpants for the generation of the csv file
-     * @param type $participants
+     * @param Array $participants
      */
     public function downloadParticipants($participants = [])
     {
@@ -61,4 +61,129 @@ class Utils
         }
     }
     
+    /**
+     * Add Or Update users with WeezEvent members
+     * @param Array $participants
+     * @param int $idEvent
+     */
+    public function addOrUpdateUsers($participants = [], $idEvent = 0)
+    {    
+        $newUsers = 0;
+        if (!empty($participants)) {
+            $listIds = [];
+            foreach ($participants as $part) {
+                $row = !empty($part->owner) ? $part->owner : null;
+                if (!empty($row) && !empty($row->email) && !empty($row->first_name) && !empty($row->last_name)) {
+                    $user = get_user_by('email', $row->email);
+                    $login = $this->normalizeString($row->last_name);
+                    $login = strtolower($row->first_name[0]).$login;
+                    if (empty($user)) {
+                        $user = get_user_by('login', $login);
+                    }
+                    $datas = [
+                        'first_name'    => $row->first_name,
+                        'last_name'     => $row->last_name,
+                        'display_name'  => $row->first_name.' '.$row->last_name
+                    ];
+                    if (!empty($user)) {
+                        $datas['ID'] = $user->ID;
+                        $listIds[] = $user->ID;
+                        wp_update_user($datas);
+                    }
+                    else {
+                        $datas['user_email'] = $row->email;
+                        $datas['user_pass'] = NULL;
+                        $datas['user_login'] = $login;
+                        $datas['user_nicename'] = $login;
+                        $userId = wp_insert_user($datas);
+                        $listIds[] = $userId;
+                        $newUsers++;
+                    }
+                }
+            }
+            if (!empty($listIds) && !empty($idEvent)) {
+                $this->saveUsersWeezEvent($listIds, $idEvent);
+            }
+        }
+        return $newUsers;
+    }
+
+    /**
+     * Save users id for one WeezEvent in bdd
+     * @param Array $listIds
+     * @param int $idEvent
+     */
+    public function saveUsersWeezEvent($listIds, $idEvent)
+    {
+        global $wpdb;
+        $table = $wpdb->prefix.'users_weezevents';
+        $this->createTable($table);
+        
+        $existIds = [];
+        $users = $wpdb->get_results('SELECT user_id FROM '.$table.' WHERE weezevent_id = '.$idEvent);
+        if (!empty($users)) {
+            foreach ($users as $u) {
+                $existIds[] = $u->user_id;
+            }
+        }
+        foreach ($listIds as $id) {           
+            if (!in_array($id, $existIds)) {
+                $wpdb->query('INSERT INTO '.$table.' (user_id, weezevent_id) VALUES ('.$id.','.$idEvent.')');
+            }
+        }
+    }
+    
+    /**
+     * Create table $table if not exist
+     * @param string $table
+     */
+    public function createTable($table)
+    {
+        global $wpdb;
+        if($wpdb->get_var("SHOW TABLES LIKE '$table'") != $table) {
+             //table not in database. Create new table
+             $charset_collate = $wpdb->get_charset_collate();
+             $sql = "CREATE TABLE $table (
+                `user_id` int(11) NOT NULL,
+                `weezevent_id` int(11) NOT NULL,
+                PRIMARY KEY (`user_id`,`weezevent_id`)
+             ) $charset_collate;";
+             require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+             dbDelta($sql);
+        }
+    }
+    
+    /**
+     * Normalize a string
+     * @param string $string
+     * @return string $string
+     */
+    public function normalizeString($string)
+    {
+        $string = mb_strtolower($string, 'UTF-8');
+        $string = str_replace(
+            [
+                'à', 'â', 'ä', 'á', 'ã', 'å',
+                'î', 'ï', 'ì', 'í', 
+                'ô', 'ö', 'ò', 'ó', 'õ', 'ø', 
+                'ù', 'û', 'ü', 'ú', 
+                'é', 'è', 'ê', 'ë', 
+                'ç', 'ÿ', 'ñ',
+                '\'', ' ', '-', '_',
+            ],
+            [
+                'a', 'a', 'a', 'a', 'a', 'a', 
+                'i', 'i', 'i', 'i', 
+                'o', 'o', 'o', 'o', 'o', 'o', 
+                'u', 'u', 'u', 'u', 
+                'e', 'e', 'e', 'e', 
+                'c', 'y', 'n', 
+                '', '', '', '',
+            ],
+            $string
+        );
+ 
+    return $string;
+        
+    }
 }

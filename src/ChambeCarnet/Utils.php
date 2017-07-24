@@ -81,8 +81,8 @@ class Utils
                         $user = get_user_by('login', $login);
                     }
                     $datas = [
-                        'first_name'    => $row->first_name,
-                        'last_name'     => $row->last_name,
+                        'first_name'    => ucwords(strtolower($row->first_name)),
+                        'last_name'     => ucwords(strtolower($row->last_name)),
                         'display_name'  => $row->first_name.' '.$row->last_name
                     ];
                     if (!empty($user)) {
@@ -95,6 +95,7 @@ class Utils
                         $datas['user_pass'] = NULL;
                         $datas['user_login'] = $login;
                         $datas['user_nicename'] = $login;
+                        $datas['role'] = "";
                         $userId = wp_insert_user($datas);
                         $listIds[] = $userId;
                         $newUsers++;

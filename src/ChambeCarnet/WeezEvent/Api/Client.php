@@ -59,7 +59,8 @@ class Client
         $resolver = new OptionsResolver();
         $resolver->setDefaults([
             'access_token'=> $this->accessToken,
-            'api_key' => $this->apiKey
+            'api_key' => $this->apiKey,
+            'include_closed' => true
         ]);
 
         $response = $this->client->get('events', [

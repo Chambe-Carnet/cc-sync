@@ -135,6 +135,35 @@ class Utils
     }
     
     /**
+     * Return ids of users for one WeezEvent id
+     * @param int $idEvent
+     */
+    public function getUsersByEvent($idEvent)
+    {
+        global $wpdb;
+        $table_event = $wpdb->prefix.'users_weezevents';
+        $table_users = $wpdb->prefix.'usermeta';
+        $listIds = [];
+        if (!empty($idEvent)) {
+            $users = $wpdb->get_results(
+                'SELECT te.user_id '
+               .'FROM '.$table_event.' as te '
+               .'INNER JOIN '.$table_users.' tu ON te.user_id = tu.user_id AND tu.meta_key = "last_name" '
+               .'INNER JOIN '.$table_users.' tu2 ON te.user_id = tu.user_id AND tu2.meta_key = "first_name" '
+               .'WHERE te.weezevent_id = '.$idEvent.' '
+               .'GROUP BY te.user_id '
+               .'ORDER BY tu.meta_value, tu2.meta_value ASC'
+            );
+            if (!empty($users)) {
+                foreach ($users as $u) {
+                    $listIds[] = $u->user_id;
+                }
+            }
+        }
+        return $listIds;
+    }
+    
+    /**
      * Create table $table if not exist
      * @param string $table
      */

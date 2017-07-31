@@ -24,7 +24,7 @@ if (!empty($idEvent) && !empty($action)) {
  
 $format = "Y-m-d H:i:s";
 $now = new \DateTime('now');
-$interval = new DateInterval("P1M"); 
+$interval = new DateInterval("P3M"); 
 $date = $now->sub($interval);
 $client = new \ChambeCarnet\WeezEvent\Api\Client();
 $events = $client->getEvents();
@@ -72,6 +72,7 @@ $events = $client->getEvents();
                 <th>Nom</th>
                 <th>Date de l'événement</th>
                 <th>Nb inscrits</th>
+                <th>ShortCode</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -85,6 +86,7 @@ $events = $client->getEvents();
                         <td><?= $evt->name; ?></td>
                         <td><?= $evt->date->start; ?></td>
                         <td><?= $evt->participants; ?></td>
+                        <td>[we_participants id_event=<?= $evt->id; ?>]</td>
                         <td>
                             <?php if (!empty($evt->participants)) { ?>
                                 <a href="/wp-admin/admin.php?page=ccsync-page&a=u&e=<?=$evt->id;?>" >Synchroniser les participants</a>

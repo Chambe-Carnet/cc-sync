@@ -15,12 +15,12 @@
  */
 function cc_sync_admin_menu_page(){
     add_menu_page( 
-        'ChambeCarnet synchro to WeezEvent',
-        'CC Sync',
+        'ChambeCarnet synchro to Weezevent',
+        'Weezevent',
         'manage_options',
         'ccsync-page',
         'cc_sync_admin_page',
-        plugins_url('/cc-sync/images/icon.png'),
+		'dashicons-tickets',
         6
     ); 
 }

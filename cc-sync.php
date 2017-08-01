@@ -15,9 +15,9 @@
  */
 function cc_sync_admin_menu_page(){
     add_menu_page( 
-        'ChambeCarnet synchro to Weezevent',
+        'Chambé-Carnet synchro to Weezevent',
         'Weezevent',
-        'manage_options',
+        'create_users',
         'ccsync-page',
         'cc_sync_admin_page',
 		'dashicons-tickets',

@@ -56,7 +56,7 @@ $events = $client->getEvents();
     }
 </style>
 
-<h1>Evénements WeezEvent de ChambeCarnet</h1>
+<h1>Evénements Weezevent de Chambé-Carnet</h1>
 
 <?php if (!empty($action) && $action === 'u') { ?>
     <div class="updated notice visibility-notice">
@@ -68,7 +68,7 @@ $events = $client->getEvents();
     <table class="events">
         <thead>
             <tr>
-                <th>Id WeezEvent</th>
+                <th>Id Weezevent</th>
                 <th>Nom</th>
                 <th>Date de l'événement</th>
                 <th>Nb inscrits</th>

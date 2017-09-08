@@ -73,6 +73,22 @@ class Utils
             $listIds = [];
             foreach ($participants as $part) {
                 $row = !empty($part->owner) ? $part->owner : null;
+                $answers = !empty($part->answers) ? $part->answers: [];
+                $userInfos = ['fonction' => '', 'societe' => ''];
+                if (!empty($answers)) {
+                    foreach ($answers as $infos) {
+                        if (!empty($infos->label)) {
+                            switch ($infos->label) {
+                                case 'Fonction':
+                                    $userInfos['fonction'] = $infos->value;
+                                    break;
+                                case 'Societe':
+                                    $userInfos['societe'] = $infos->value;
+                                    break;
+                            }
+                        }
+                    }
+                }
                 if (!empty($row) && !empty($row->email) && !empty($row->first_name) && !empty($row->last_name)) {
                     $user = get_user_by('email', $row->email);
                     $login = $this->normalizeString($row->last_name);

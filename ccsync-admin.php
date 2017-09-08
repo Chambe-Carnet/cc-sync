@@ -58,7 +58,7 @@ $events = $client->getEvents();
 
 <h1>Evénements WeezEvent de ChambeCarnet</h1>
 
-<?php if (!empty($newUsers)) { ?>
+<?php if (!empty($action) && $action === 'u') { ?>
     <div class="updated notice visibility-notice">
         <p><strong><?=$newUsers;?></strong> utilisateur(s) créé(s).</p>
     </div>

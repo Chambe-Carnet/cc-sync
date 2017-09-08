@@ -41,9 +41,10 @@ class Client
     {
         $resolver = new OptionsResolver();
         $resolver->setDefaults([
-            'access_token'=> $this->accessToken,
-            'api_key' => $this->apiKey,
-            'id_event' => []
+            'access_token' => $this->accessToken,
+            'api_key'      => $this->apiKey,
+            'id_event'     => [],
+            'full'         => 1
         ]);
         $resolver->setAllowedTypes('id_event', ['array']);
 
@@ -58,9 +59,10 @@ class Client
     {
         $resolver = new OptionsResolver();
         $resolver->setDefaults([
-            'access_token'=> $this->accessToken,
-            'api_key' => $this->apiKey,
-            'include_closed' => true
+            'access_token'          => $this->accessToken,
+            'api_key'               => $this->apiKey,
+            'include_closed'        => true,
+            'include_without_sales' => true
         ]);
 
         $response = $this->client->get('events', [

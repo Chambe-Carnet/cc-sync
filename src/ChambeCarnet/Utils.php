@@ -14,12 +14,12 @@ class Utils
     public function downloadCsv($filename, $header, $rows, $delimiter = ';')
     {
         if (!empty($rows)) {
-            $output = fopen('php://output', 'w');
+            $output = fopen($filename, 'w');
             fputcsv($output, $header, $delimiter);
             foreach ($rows as $row) {
                 fputcsv($output, $row, $delimiter);
             }
-
+            
             header("Content-type: application/csv");
             header("Content-Disposition: attachment; filename=".$filename);
             header("Pragma: no-cache");
@@ -37,21 +37,21 @@ class Utils
     }
     
     /**
-     * Parse particpants for the generation of the csv file
-     * @param Array $participants
+     * Get users by list Id for the generation of the csv file
+     * @param Array $listIds
      */
-    public function downloadParticipants($participants = [])
+    public function downloadParticipants($listIds = [])
     {
-        if (!empty($participants)) {
+        if (!empty($listIds)) {
             $filename = 'participants.csv';
-            $headers = ['Nom', 'Prenom', 'Email'];
+            $headers = ['Nom', 'Prenom', 'Email', 'Fonction', 'Société'];
             $rows = [];
-            foreach ($participants as $part) {
-                $row = !empty($part->owner) ? $part->owner : null;
-                if (!empty($row) && !empty($row->email)) {
-                    $nom = !empty($row->last_name) ? mb_convert_case($row->last_name, MB_CASE_TITLE, 'UTF-8') : '';
-                    $prenom = !empty($row->first_name) ? mb_convert_case($row->first_name, MB_CASE_TITLE, 'UTF-8') : '';
-                    $rows[] = [$nom, $prenom, $row->email];
+            foreach ($listIds as $id) {
+                $userMeta = get_userdata($id);
+                if (!empty($userMeta) && !empty($userMeta->user_email)) {
+                    $nom = !empty($userMeta->last_name) ? mb_convert_case($userMeta->last_name, MB_CASE_TITLE, 'UTF-8') : '';
+                    $prenom = !empty($userMeta->first_name) ? mb_convert_case($userMeta->first_name, MB_CASE_TITLE, 'UTF-8') : '';
+                    $rows[] = [$nom, $prenom, $userMeta->user_email, '', ''];
                 }
             }
             if (!empty($rows)) {
@@ -68,27 +68,41 @@ class Utils
      */
     public function addOrUpdateUsers($participants = [], $idEvent = 0)
     {    
+        // ['WeezEvent' => 'ChambeCarnet']
+        $userFields = [
+            'Fonction'        => 'profession',
+            'Societe'         => 'entreprise',
+            'Site Internet'   => 'sitewebentreprise',
+            'Compte twitter'  => 'twitter',
+            'Profil linkedin' => 'linkedin',
+            'Profil viadeo'   => 'viadeo',
+        ];
         $newUsers = 0;
         if (!empty($participants)) {
             $listIds = [];
             foreach ($participants as $part) {
                 $row = !empty($part->owner) ? $part->owner : null;
+                // Update main field of users
+                $userId = null;
                 if (!empty($row) && !empty($row->email) && !empty($row->first_name) && !empty($row->last_name)) {
                     $user = get_user_by('email', $row->email);
                     $login = $this->normalizeString($row->last_name);
-                    $login = strtolower($row->first_name[0]).$login;
+                    $login = mb_strtolower($row->first_name[0]).$login;
                     if (empty($user)) {
                         $user = get_user_by('login', $login);
                     }
+                    $fName = ucwords(mb_strtolower($row->first_name));
+                    $lName = ucwords(mb_strtolower($row->last_name));
                     $datas = [
-                        'first_name'    => ucwords(strtolower($row->first_name)),
-                        'last_name'     => ucwords(strtolower($row->last_name)),
-                        'display_name'  => $row->first_name.' '.$row->last_name
+                        'first_name'    => $fName,
+                        'last_name'     => $lName,
+                        'display_name'  => $fName.' '.$lName
                     ];
                     if (!empty($user)) {
+                        $userId = $user->ID;
                         $datas['ID'] = $user->ID;
-                        $listIds[] = $user->ID;
                         wp_update_user($datas);
+                        $listIds[] = $user->ID;
                     }
                     else {
                         $datas['user_email'] = $row->email;
@@ -99,6 +113,17 @@ class Utils
                         $userId = wp_insert_user($datas);
                         $listIds[] = $userId;
                         $newUsers++;
+                    }
+                }
+                // Update custom ACF fields of users
+                $answers = !empty($part->answers) ? $part->answers: [];
+                if (!empty($answers) && !empty($userId)) {
+                    foreach ($answers as $infos) {
+                        if (!empty($infos->label) && !empty($infos->value) && array_key_exists($infos->label, $userFields)) {
+                            // We have to delete value before update its
+                            delete_field($userFields[$infos->label], 'user_'.$userId);
+                            update_field($userFields[$infos->label], $infos->value, 'user_'.$userId);
+                        }
                     }
                 }
             }

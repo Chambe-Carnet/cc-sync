@@ -3,25 +3,36 @@ require __DIR__.'/vendor/autoload.php';
 require __DIR__.'/../../../cc-config.php';
 
 $idEvent = !empty($_GET['e']) ? $_GET['e'] : null;
-$action = !empty($_GET['a']) ? $_GET['a'] : null;
+$actionEvent = !empty($_GET['a']) ? $_GET['a'] : null;
 $newUsers = 0;
-if (!empty($idEvent) && !empty($action)) {
+$msg = [];
+
+if (!empty($idEvent) && !empty($actionEvent)) {
     $client = new \ChambeCarnet\WeezEvent\Api\Client();
     $utils = new \ChambeCarnet\Utils();
     $participants = $client->getParticipants(['id_event' => [$idEvent]]);
     if (!empty($participants)) {
-        if ($action === 'd') {
-            // download of event member's into csv format
-            $utils->downloadParticipants($participants);
+        if ($actionEvent === 'd') {
+            $users = $utils->getUsersByEvent($idEvent);
+            if (!empty($users)) {
+                // download of event member's into csv format
+                $utils->downloadParticipants($users);
+            }
+            else {
+                $msg = ["type" => "error", "msg" => "<p>Aucun utilisateur trouvé en base pour cet événement. Merci d'effectuer la synchronistation avant l'export.</p>"];
+            }
         }
-        elseif ($action === 'u') {
+        elseif ($actionEvent === 'u') {
             require __DIR__.'/../../../wp-blog-header.php';
             // Add/update of users unside bdd
             $newUsers = $utils->addOrUpdateUsers($participants, $idEvent);
+            $msg = ["type" => "updated", "msg" => "<p><strong>$newUsers</strong> utilisateur(s) créé(s).</p>"];
         }
     }
+    else {
+        $msg = ["type" => "error", "msg" => "<p>Aucun participant retourné par WeezEvent pour cet événement ($idEvent)</p>"];
+    }
 }
- 
 $format = "Y-m-d H:i:s";
 $now = new \DateTime('now');
 $interval = new DateInterval("P3M"); 
@@ -58,11 +69,14 @@ $events = $client->getEvents();
 
 <h1>Evénements Weezevent de Chambé-Carnet</h1>
 
-<?php if (!empty($action) && $action === 'u') { ?>
-    <div class="updated notice visibility-notice">
-        <p><strong><?=$newUsers;?></strong> utilisateur(s) créé(s).</p>
+<?php 
+if (!empty($msg)) { ?>
+    <div class="<?=$msg['type'];?> notice visibility-notice">
+        <?=$msg['msg'];?>
     </div>
-<?php } ?>
+<?php 
+} 
+?>
 
 <?php if (!empty($events)) { ?>
     <table class="events">
@@ -90,7 +104,7 @@ $events = $client->getEvents();
                         <td>
                             <?php if (!empty($evt->participants)) { ?>
                                 <a href="/wp-admin/admin.php?page=ccsync-page&a=u&e=<?=$evt->id;?>" >Synchroniser les participants</a>
-                                <a href="<?= WP_PLUGIN_URL.'/cc-sync/ccsync-admin.php?a=d&e='.$evt->id; ?>" >Exporter les participants</a>
+                                <a href="/wp-admin/admin.php?page=ccsync-page&a=d&e=<?=$evt->id;?>" >Exporter les participants</a>
                             <?php } ?>
                         </td>
                     </tr>

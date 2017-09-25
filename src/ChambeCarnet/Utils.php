@@ -13,19 +13,18 @@ class Utils
      */
     public function downloadCsv($filename, $header, $rows, $delimiter = ';')
     {
+        $directory = plugin_dir_path(__FILE__);
+        if (file_exists($directory.$filename))
+            unlink($directory.$filename);
         if (!empty($rows)) {
-            $output = fopen($filename, 'w');
+            $output = fopen($directory.$filename, 'w');
             fputcsv($output, $header, $delimiter);
             foreach ($rows as $row) {
                 fputcsv($output, $row, $delimiter);
             }
-            
-            header("Content-type: application/csv");
-            header("Content-Disposition: attachment; filename=".$filename);
-            header("Pragma: no-cache");
-            header("Expires: 0");
-            exit();
+            fclose($output);
         }
+        return $directory.$filename;
     }
     
     /**
@@ -42,6 +41,7 @@ class Utils
      */
     public function downloadParticipants($listIds = [])
     {
+        $filename = null;
         if (!empty($listIds)) {
             $filename = 'participants.csv';
             $headers = ['Nom', 'Prenom', 'Email', 'Fonction', 'Société'];
@@ -56,9 +56,10 @@ class Utils
             }
             if (!empty($rows)) {
                 uasort($rows, [$this, "sortArray"]);
-                $this->downloadCsv($filename, $headers, $rows);
+                $filename = $this->downloadCsv($filename, $headers, $rows);
             }
         }
+        return $filename;
     }
     
     /**
@@ -72,11 +73,13 @@ class Utils
         $userFields = [
             'Fonction'        => 'profession',
             'Societe'         => 'entreprise',
-            'Site Internet'   => 'sitewebentreprise',
+            'Site_internet'   => 'sitewebentreprise',
             'Compte twitter'  => 'twitter',
             'Profil linkedin' => 'linkedin',
             'Profil viadeo'   => 'viadeo',
         ];
+        // Events Adhesions
+        $eventsAdhesions = [15149, 24266];
         $newUsers = 0;
         if (!empty($participants)) {
             $listIds = [];
@@ -98,9 +101,12 @@ class Utils
                         'last_name'     => $lName,
                         'display_name'  => $fName.' '.$lName
                     ];
+                    $role = in_array($idEvent, $eventsAdhesions) ? "membre" : "";
                     if (!empty($user)) {
                         $userId = $user->ID;
                         $datas['ID'] = $user->ID;
+                        if (!empty($role))
+                            $datas['role'] = $role;
                         wp_update_user($datas);
                         $listIds[] = $user->ID;
                     }
@@ -109,7 +115,7 @@ class Utils
                         $datas['user_pass'] = NULL;
                         $datas['user_login'] = $login;
                         $datas['user_nicename'] = $login;
-                        $datas['role'] = "";
+                        $datas['role'] = $role;
                         $userId = wp_insert_user($datas);
                         $listIds[] = $userId;
                         $newUsers++;

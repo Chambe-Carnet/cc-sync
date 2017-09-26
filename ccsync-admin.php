@@ -6,6 +6,7 @@ $idEvent = !empty($_GET['e']) ? $_GET['e'] : null;
 $actionEvent = !empty($_GET['a']) ? $_GET['a'] : null;
 $newUsers = 0;
 $msg = [];
+$csvFile = null;
 
 if (!empty($idEvent) && !empty($actionEvent)) {
     $client = new \ChambeCarnet\WeezEvent\Api\Client();
@@ -16,7 +17,11 @@ if (!empty($idEvent) && !empty($actionEvent)) {
             $users = $utils->getUsersByEvent($idEvent);
             if (!empty($users)) {
                 // download of event member's into csv format
-                $utils->downloadParticipants($users);
+                $filename = $utils->downloadParticipants($users);
+                if (!empty($filename) && file_exists($filename)) {
+                    $csvFile = "cc-sync/src/ChambeCarnet/".basename($filename);
+                    echo '<a id="csvParticipants" href="'.plugins_url($csvFile).'">&nbsp;</a>';
+                }
             }
             else {
                 $msg = ["type" => "error", "msg" => "<p>Aucun utilisateur trouvé en base pour cet événement. Merci d'effectuer la synchronistation avant l'export.</p>"];
@@ -42,6 +47,9 @@ $events = $client->getEvents();
 
 ?>
 <style type="text/css">
+    #csvParticipants {
+        display: none;
+    }
     .events {
         width: 80%;
         text-align: left;
@@ -92,13 +100,17 @@ if (!empty($msg)) { ?>
         </thead>
         <tbody>
             <?php foreach ($events as $evt) {
-                $evtDate = !empty($evt->date) && !empty($evt->date->start) ? \DateTime::createFromFormat($format, $evt->date->start) : null;
-                if ($evtDate >= $date) {
+                $evtDate = null;
+                if (!empty($evt->date) && !empty($evt->date->start)) {  
+                    $evtDate = new DateTime($evt->date->start, new DateTimeZone('UTC'));
+                    $evtDate->setTimezone(new DateTimeZone('Europe/Paris'));
+                }
+                if (!empty($evtDate) && $evtDate >= $date) {
                 ?>
                     <tr>
                         <td><?= $evt->id; ?></td>
                         <td><?= $evt->name; ?></td>
-                        <td><?= $evt->date->start; ?></td>
+                        <td><?= $evtDate->format($format); ?></td>
                         <td><?= $evt->participants; ?></td>
                         <td>[we_participants id_event=<?= $evt->id; ?>]</td>
                         <td>
@@ -116,4 +128,18 @@ if (!empty($msg)) { ?>
 else {
 ?>
     <p>Aucun événement prévu pour le moment !</p>
+<?php } 
+
+if (!empty($csvFile)) {
+?>
+    <script type="text/javascript">
+        jQuery(document).ready(function() {
+           var csvFile = jQuery('#csvParticipants');
+           console.log(csvFile);
+           if (csvFile.length > 0) {
+//               csvFile.trigger('click');
+               csvFile[0].click();
+           }
+        });
+    </script>
 <?php } ?>

@@ -44,14 +44,16 @@ class Utils
         $filename = null;
         if (!empty($listIds)) {
             $filename = 'participants.csv';
-            $headers = ['Nom', 'Prenom', 'Email', 'Fonction', 'Société'];
+            $headers = ['Nom', 'Prenom', 'Email', 'Profession', 'Société'];
             $rows = [];
             foreach ($listIds as $id) {
                 $userMeta = get_userdata($id);
                 if (!empty($userMeta) && !empty($userMeta->user_email)) {
                     $nom = !empty($userMeta->last_name) ? mb_convert_case($userMeta->last_name, MB_CASE_TITLE, 'UTF-8') : '';
                     $prenom = !empty($userMeta->first_name) ? mb_convert_case($userMeta->first_name, MB_CASE_TITLE, 'UTF-8') : '';
-                    $rows[] = [$nom, $prenom, $userMeta->user_email, '', ''];
+                    $profession = !empty($userMeta->profession) ? mb_convert_case($userMeta->profession, MB_CASE_TITLE, 'UTF-8') : '';
+                    $entreprise = !empty($userMeta->entreprise) ? mb_convert_case($userMeta->entreprise, MB_CASE_TITLE, 'UTF-8') : '';
+                    $rows[] = [$nom, $prenom, $userMeta->user_email, $profession, $entreprise];
                 }
             }
             if (!empty($rows)) {

@@ -14,8 +14,12 @@ class Utils
     public function downloadCsv($filename, $header, $rows, $delimiter = ';')
     {
         $directory = plugin_dir_path(__FILE__);
-        if (file_exists($directory.$filename))
-            unlink($directory.$filename);
+        $dir = $directory."*.csv";
+        foreach(glob($dir) as $file) {
+            if(!is_dir($file)) {
+                unlink($directory.basename($file));
+            }
+        }
         if (!empty($rows)) {
             $output = fopen($directory.$filename, 'w');
             fputcsv($output, $header, $delimiter);
@@ -39,12 +43,13 @@ class Utils
      * Get users by list Id for the generation of the csv file
      * @param Array $listIds
      */
-    public function downloadParticipants($listIds = [])
+    public function downloadParticipants($listIds = [], $idEvent)
     {
         $filename = null;
         if (!empty($listIds)) {
-            $filename = 'participants.csv';
-            $headers = ['Nom', 'Prenom', 'Email', 'Profession', 'Société'];
+            $date = date("YmdHis-");
+            $filename = $date.$idEvent.'-'.'participants.csv';
+            $headers = ['Nom', 'Prénom', 'Email', 'Profession', 'Société'];
             $rows = [];
             foreach ($listIds as $id) {
                 $userMeta = get_userdata($id);

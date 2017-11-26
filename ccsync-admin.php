@@ -17,7 +17,7 @@ if (!empty($idEvent) && !empty($actionEvent)) {
             $users = $utils->getUsersByEvent($idEvent);
             if (!empty($users)) {
                 // download of event member's into csv format
-                $filename = $utils->downloadParticipants($users);
+                $filename = $utils->downloadParticipants($users, $idEvent);
                 if (!empty($filename) && file_exists($filename)) {
                     $csvFile = "cc-sync/src/ChambeCarnet/".basename($filename);
                     echo '<a id="csvParticipants" href="'.plugins_url($csvFile).'">&nbsp;</a>';
@@ -115,8 +115,8 @@ if (!empty($msg)) { ?>
                         <td>[we_participants id_event=<?= $evt->id; ?>]</td>
                         <td>
                             <?php if (!empty($evt->participants)) { ?>
-                                <a href="/wp-admin/admin.php?page=ccsync-page&a=u&e=<?=$evt->id;?>" >Synchroniser les participants</a>
-                                <a href="/wp-admin/admin.php?page=ccsync-page&a=d&e=<?=$evt->id;?>" >Exporter les participants</a>
+                                <a href="/wp-admin/admin.php?page=ccsync-page&a=u&e=<?=$evt->id;?>" >Synchroniser</a>
+                                <a href="/wp-admin/admin.php?page=ccsync-page&a=d&e=<?=$evt->id;?>" >Exporter</a>
                             <?php } ?>
                         </td>
                     </tr>

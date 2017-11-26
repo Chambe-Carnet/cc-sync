@@ -11,7 +11,7 @@ class Utils
      * @param array $rows
      * @param string $delimiter
      */
-    public function downloadCsv($filename, $header, $rows, $delimiter = ';')
+    public function downloadCsv($filename, $header, $rows, $delimiter = ',')
     {
         $directory = plugin_dir_path(__FILE__);
         $dir = $directory."*.csv";

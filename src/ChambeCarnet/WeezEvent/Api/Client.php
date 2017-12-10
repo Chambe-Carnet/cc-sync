@@ -61,7 +61,8 @@ class Client
         $resolver->setDefaults([
             'access_token'          => $this->accessToken,
             'api_key'               => $this->apiKey,
-            'include_closed'        => true,
+            'include_not_published' => false,
+            'include_closed'        => false,
             'include_without_sales' => true
         ]);
 

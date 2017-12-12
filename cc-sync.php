@@ -58,7 +58,13 @@ function weezevent_users($params){
                         <br /><?php the_author_meta('profession', $user->ID); ?>
                     <?php endif ?>
                     <?php if(!empty(get_the_author_meta('entreprise', $user->ID))): ?>
-                        <br />Entreprise : <a href="<?php the_author_meta('sitewebentreprise', $user->ID); ?>"><?php the_author_meta('entreprise', $user->ID); ?></a>
+                        <br />Entreprise : 
+						<?php if(!empty(get_the_author_meta('sitewebentreprise', $user->ID))): ?>
+							<a href="<?php the_author_meta('sitewebentreprise', $user->ID); ?>"><?php the_author_meta('entreprise', $user->ID); ?></a>
+							<?php endif ?>
+							<?php if(empty(get_the_author_meta('sitewebentreprise', $user->ID))): ?>
+								<?php the_author_meta('entreprise', $user->ID); ?>
+							<?php endif ?>
                     <?php endif ?>
                     <?php if(!empty(get_the_author_meta('url', $user->ID))): 
                         $url_name = str_replace("http://", '',get_the_author_meta('url', $user->ID));
@@ -70,17 +76,17 @@ function weezevent_users($params){
                     <br />
                     <?php if(!empty(get_the_author_meta('linkedin', $user->ID))): ?>
                         <a href="<?php the_author_meta('linkedin', $user->ID); ?>">
-                            <img class="alignleft size-full wp-image-931" title="linkedin" src="http://www.chambe-carnet.com/wp-content/uploads/2011/01/linkedin.png" alt="linkedin" width="20" height="18" />
+                            <img class="alignleft size-full wp-image-931" title="linkedin" src="https://www.chambe-carnet.com/wp-content/uploads/2011/01/linkedin.png" alt="linkedin" width="20" height="18" />
                         </a>
                     <?php endif ?>
                     <?php if(!empty(get_the_author_meta('viadeo', $user->ID))): ?>
                         <a href="<?php the_author_meta('viadeo', $user->ID); ?>">
-                            <img class="alignleft size-full wp-image-934" title="viadeo" src="http://www.chambe-carnet.com/wp-content/uploads/2011/01/viadeo.png" alt="viadeo" width="20" height="18" />
+                            <img class="alignleft size-full wp-image-934" title="viadeo" src="https://www.chambe-carnet.com/wp-content/uploads/2011/01/viadeo.png" alt="viadeo" width="20" height="18" />
                         </a>
                     <?php endif ?>
                     <?php if(!empty(get_the_author_meta('twitter', $user->ID))): ?>
                         <a href="<?php the_author_meta('twitter', $user->ID); ?>">
-                            <img class="alignleft size-full wp-image-933" title="twitter" src="http://www.chambe-carnet.com/wp-content/uploads/2011/01/twitter.png" alt="twitter" width="18" height="18" />
+                            <img class="alignleft size-full wp-image-933" title="twitter" src="https://www.chambe-carnet.com/wp-content/uploads/2011/01/twitter.png" alt="twitter" width="18" height="18" />
                         </a>
                     <?php endif ?>
                 </li>

@@ -105,7 +105,7 @@ if (!empty($msg)) { ?>
                     $evtDate = new DateTime($evt->date->start, new DateTimeZone('UTC'));
                     $evtDate->setTimezone(new DateTimeZone('Europe/Paris'));
                 }
-                if (!empty($evtDate) && $evtDate >= $date) {
+                if (!empty($evtDate)) {
                 ?>
                     <tr>
                         <td><?= $evt->id; ?></td>

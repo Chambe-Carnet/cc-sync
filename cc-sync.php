@@ -58,7 +58,7 @@ function weezevent_users($params){
                         <br /><?php the_author_meta('profession', $user->ID); ?>
                     <?php endif ?>
                     <?php if(!empty(get_the_author_meta('entreprise', $user->ID))): ?>
-                        <br />Entreprise : 
+                        @
 						<?php if(!empty(get_the_author_meta('sitewebentreprise', $user->ID))): ?>
 							<a href="<?php the_author_meta('sitewebentreprise', $user->ID); ?>"><?php the_author_meta('entreprise', $user->ID); ?></a>
 							<?php endif ?>

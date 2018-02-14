@@ -90,7 +90,7 @@ class Utils
             'Profil viadeo' => 'viadeo',
         ];
         // Events Adhesions
-        $eventsAdhesions = [15149, 24266];
+        // $eventsAdhesions = [15149, 24266];
         $newUsers = 0;
         if (!empty($participants)) {
             $listIds = [];
@@ -112,12 +112,12 @@ class Utils
                         'last_name' => $lName,
                         'display_name' => $fName . ' ' . $lName
                     ];
-                    $role = in_array($idEvent, $eventsAdhesions) ? "membre" : "";
+                    // $role = in_array($idEvent, $eventsAdhesions) ? "membre" : "";
                     if (!empty($user)) {
                         $userId = $user->ID;
                         $datas['ID'] = $user->ID;
-                        if (!empty($role))
-                            $datas['role'] = $role;
+                        // if (!empty($role))
+                        //     $datas['role'] = $role;
                         wp_update_user($datas);
                         $listIds[] = $user->ID;
                     } else {

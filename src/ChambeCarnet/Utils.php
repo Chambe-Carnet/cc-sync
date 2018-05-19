@@ -46,7 +46,7 @@ class Utils
      * @param string $idEvent
      * @return null|string
      */
-    public function downloadParticipants($listIds = [], $idEvent)
+    public function downloadParticipants($listIds = [], $idEvent = 0)
     {
         $filename = null;
         if (!empty($listIds)) {
@@ -92,6 +92,7 @@ class Utils
         // Events Adhesions
         // $eventsAdhesions = [15149, 24266];
         $newUsers = 0;
+        $oldUsers = 0;
         if (!empty($participants)) {
             $listIds = [];
             foreach ($participants as $part) {
@@ -102,11 +103,19 @@ class Utils
                     $user = get_user_by('email', $row->email);
                     $login = $this->normalizeString($row->last_name);
                     $login = mb_strtolower($row->first_name[0]) . $login;
-                    if (empty($user)) {
-                        $user = get_user_by('login', $login);
-                    }
                     $fName = ucwords(mb_strtolower($row->first_name));
                     $lName = ucwords(mb_strtolower($row->last_name));
+                    if (empty($user)) {
+                        $user = get_user_by('login', $login);
+                        if (!empty($user)) {
+                            // On vérifie nom et prénom
+                            $sameUser = (ucwords(mb_strtolower($user->first_name)) == $fName) && (ucwords(mb_strtolower($user->last_name)) == $lName);
+                            if (!$sameUser) {
+                                $user = null;
+                                $login = $this->normalizeString($fName).$this->normalizeString($lName);
+                            }
+                        }
+                    }
                     $datas = [
                         'first_name' => $fName,
                         'last_name' => $lName,
@@ -120,12 +129,13 @@ class Utils
                         //     $datas['role'] = $role;
                         wp_update_user($datas);
                         $listIds[] = $user->ID;
-                    } else {
+                    } 
+                    else {
                         $datas['user_email'] = $row->email;
                         $datas['user_pass'] = NULL;
                         $datas['user_login'] = $login;
                         $datas['user_nicename'] = $login;
-                        $datas['role'] = $role;
+                        // $datas['role'] = $role;
                         $userId = wp_insert_user($datas);
                         $listIds[] = $userId;
                         $newUsers++;
@@ -144,20 +154,22 @@ class Utils
                 }
             }
             if (!empty($listIds) && !empty($idEvent)) {
-                $this->saveUsersWeezEvent($listIds, $idEvent);
+                $oldUsers = $this->saveUsersWeezEvent($listIds, $idEvent);
             }
         }
-        return $newUsers;
+        return [$newUsers, $oldUsers];
     }
 
     /**
      * Save users id for one WeezEvent in bdd
      * @param array $listIds
      * @param int $idEvent
+     * @return int $nbSuppr
      */
     public function saveUsersWeezEvent($listIds, $idEvent)
     {
         global $wpdb;
+        $nbSuppr = 0;
         $table = $wpdb->prefix . 'users_weezevents';
         $this->createTable($table);
 
@@ -168,11 +180,21 @@ class Utils
                 $existIds[] = $u->user_id;
             }
         }
+        // Si on supprime un participant de WeezEvent
+        foreach ($existIds as $eId) {
+            if (!in_array($eId, $listIds)) {
+                $nbSuppr++;
+                $wpdb->query('DELETE FROM ' . $table . ' WHERE user_id = '.$eId);
+            }
+        }
+        // Ajout des nouveaux participants
         foreach ($listIds as $id) {
             if (!in_array($id, $existIds)) {
                 $wpdb->query('INSERT INTO ' . $table . ' (user_id, weezevent_id) VALUES (' . $id . ',' . $idEvent . ')');
             }
         }
+        
+        return $nbSuppr;
     }
 
     /**

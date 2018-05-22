@@ -14,7 +14,7 @@
  * Register a custom menu page.
  */
 function cc_sync_admin_menu_page(){
-    add_menu_page( 
+    add_menu_page(
         'Chambé-Carnet synchro to Weezevent',
         'Weezevent',
         'create_users',
@@ -22,10 +22,10 @@ function cc_sync_admin_menu_page(){
         'cc_sync_admin_page',
 		'dashicons-tickets',
         6
-    ); 
+    );
 }
 add_action( 'admin_menu', 'cc_sync_admin_menu_page' );
- 
+
 /**
  * Display a custom menu page
  */
@@ -59,13 +59,14 @@ function weezevent_users($params){
                     <?php endif ?>
                     <?php if(!empty(get_the_author_meta('entreprise', $user->ID))): ?>
                         @
+                        <?php if(!empty(get_the_author_meta('sitewebentreprise', $user->ID))): ?>
                             <a href="<?php the_author_meta('sitewebentreprise', $user->ID); ?>"><?php the_author_meta('entreprise', $user->ID); ?></a>
                         <?php endif ?>
                         <?php if(empty(get_the_author_meta('sitewebentreprise', $user->ID))): ?>
                             <?php the_author_meta('entreprise', $user->ID); ?>
                         <?php endif ?>
                     <?php endif ?>
-                    <?php if(!empty(get_the_author_meta('url', $user->ID))): 
+                    <?php if(!empty(get_the_author_meta('url', $user->ID))):
                         $url_name = str_replace("http://", '',get_the_author_meta('url', $user->ID));
                         $url_name = str_replace('www.', '', $url_name);
                         $url_name = str_replace('/', '', $url_name);

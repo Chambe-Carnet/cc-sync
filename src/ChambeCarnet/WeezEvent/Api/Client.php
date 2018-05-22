@@ -63,9 +63,9 @@ class Client
             'api_key'               => $this->apiKey,
             'include_not_published' => false,
             'include_closed'        => false,
-            'include_without_sales' => true
+            'include_without_sales' => false
         ]);
-
+        
         $response = $this->client->get('events', [
             'query' => $resolver->resolve()
         ]);

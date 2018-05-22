@@ -30,8 +30,8 @@ if (!empty($idEvent) && !empty($actionEvent)) {
         elseif ($actionEvent === 'u') {
             require __DIR__.'/../../../wp-blog-header.php';
             // Add/update of users unside bdd
-            $newUsers = $utils->addOrUpdateUsers($participants, $idEvent);
-            $msg = ["type" => "updated", "msg" => "<p><strong>$newUsers</strong> utilisateur(s) créé(s).</p>"];
+            list($newUsers, $oldUsers) = $utils->addOrUpdateUsers($participants, $idEvent);
+            $msg = ["type" => "updated", "msg" => "<p><strong>$newUsers</strong> utilisateur(s) créé(s).</p><p><strong>$oldUsers</strong> utilisateur(s) supprimé(s).</p>"];
         }
     }
     else {
@@ -86,7 +86,17 @@ if (!empty($msg)) { ?>
 } 
 ?>
 
-<?php if (!empty($events)) { ?>
+<?php 
+if (!empty($events)) { 
+    //On tri les events par date
+    $listEvents = [];
+    foreach ($events as $evt) {
+        $evtDate = new DateTime($evt->date->start, new DateTimeZone('UTC'));
+        $time = $evtDate->getTimestamp().$evt->id;
+        $listEvents[$time] = $evt;
+    }
+    ksort($listEvents);
+?>
     <table class="events">
         <thead>
             <tr>
@@ -99,7 +109,7 @@ if (!empty($msg)) { ?>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($events as $evt) {
+            <?php foreach ($listEvents as $evt) {
                 $evtDate = null;
                 if (!empty($evt->date) && !empty($evt->date->start)) {  
                     $evtDate = new DateTime($evt->date->start, new DateTimeZone('UTC'));

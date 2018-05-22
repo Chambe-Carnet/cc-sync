@@ -59,12 +59,11 @@ function weezevent_users($params){
                     <?php endif ?>
                     <?php if(!empty(get_the_author_meta('entreprise', $user->ID))): ?>
                         @
-						<?php if(!empty(get_the_author_meta('sitewebentreprise', $user->ID))): ?>
-							<a href="<?php the_author_meta('sitewebentreprise', $user->ID); ?>"><?php the_author_meta('entreprise', $user->ID); ?></a>
-							<?php endif ?>
-							<?php if(empty(get_the_author_meta('sitewebentreprise', $user->ID))): ?>
-								<?php the_author_meta('entreprise', $user->ID); ?>
-							<?php endif ?>
+                            <a href="<?php the_author_meta('sitewebentreprise', $user->ID); ?>"><?php the_author_meta('entreprise', $user->ID); ?></a>
+                        <?php endif ?>
+                        <?php if(empty(get_the_author_meta('sitewebentreprise', $user->ID))): ?>
+                            <?php the_author_meta('entreprise', $user->ID); ?>
+                        <?php endif ?>
                     <?php endif ?>
                     <?php if(!empty(get_the_author_meta('url', $user->ID))): 
                         $url_name = str_replace("http://", '',get_the_author_meta('url', $user->ID));

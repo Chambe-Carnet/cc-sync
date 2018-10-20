@@ -73,6 +73,21 @@ class Client
         return $this->decode($response)->events;
     }
     
+    public function getEvent($idEvent)
+    {
+        $resolver = new OptionsResolver();
+        $resolver->setDefaults([
+            'access_token' => $this->accessToken,
+            'api_key'      => $this->apiKey
+        ]);
+        
+        $response = $this->client->get('event/'.$idEvent.'/details', [
+            'query' => $resolver->resolve()
+        ]);
+        
+        return $this->decode($response)->events;
+    }
+    
     protected function decode(ResponseInterface $response)
     {
         return json_decode($response->getBody()->getContents());

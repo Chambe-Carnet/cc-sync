@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Liste des Badges</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style type="text/css">
+            @media print {
+                .badge {
+                    page-break-after: always;
+                }
+            }
+            * {
+                font-family: sans-serif;
+            }
+            .badge {
+                display: flex;
+            }
+            .badge .badge-part {
+                position: relative;
+            }
+            .badge .content {
+                position: absolute;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: 0;
+            }
+            .badge .content > span {
+                color: #ffffff;
+                display: block;
+                text-align: center;
+            }
+            .badge .content > span.lastname {
+                margin-top: 34%;
+                text-transform: uppercase;
+                font-size: 40px;
+                font-weight: 600;
+                line-height: 40px;
+            }
+            .badge .content > span.firstname {
+                text-transform: uppercase;
+                font-size: 30px;
+                font-weight: 600;
+                line-height: 30px;
+            }
+            .badge .content > span.function {
+                font-size: 17px;
+                font-weight: 300;
+                font-style: italic;
+                margin-top: 5px;
+            }
+            .badge .content > span.event {
+                font-weight: 600;
+                font-size: 16px;
+                position: absolute;
+                text-align: center;
+                width: 100%;
+                bottom: 21%;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="badges">
+            [[BADGES_LIST]]
+        </div>
+    </body>
+</html>

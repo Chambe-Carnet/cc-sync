@@ -6,13 +6,15 @@ $idEvent = !empty($_GET['e']) ? $_GET['e'] : null;
 $actionEvent = !empty($_GET['a']) ? $_GET['a'] : null;
 $newUsers = 0;
 $msg = [];
-$csvFile = null;
 
 if (!empty($idEvent) && !empty($actionEvent)) {
     $client = new \ChambeCarnet\WeezEvent\Api\Client();
     $utils = new \ChambeCarnet\Utils();
     $participants = $client->getParticipants(['id_event' => [$idEvent]]);
     if (!empty($participants)) {
+        /**
+         * Download csv file of event participants
+         */
         if ($actionEvent === 'd') {
             $users = $utils->getUsersByEvent($idEvent);
             if (!empty($users)) {
@@ -27,11 +29,34 @@ if (!empty($idEvent) && !empty($actionEvent)) {
                 $msg = ["type" => "error", "msg" => "<p>Aucun utilisateur trouvé en base pour cet événement. Merci d'effectuer la synchronistation avant l'export.</p>"];
             }
         }
+        /**
+         * Add/Update user for one event
+         */
         elseif ($actionEvent === 'u') {
             require __DIR__.'/../../../wp-blog-header.php';
             // Add/update of users unside bdd
             list($newUsers, $oldUsers) = $utils->addOrUpdateUsers($participants, $idEvent);
             $msg = ["type" => "updated", "msg" => "<p><strong>$newUsers</strong> utilisateur(s) créé(s).</p><p><strong>$oldUsers</strong> utilisateur(s) supprimé(s).</p>"];
+        }
+        /**
+         * Build file with badges for one event
+         */
+        elseif ($actionEvent === 'b') {
+            $event = $client->getEvent($idEvent);
+            $users = $utils->getUsersByEvent($idEvent);
+            if (empty($event)) {
+                $msg = ["type" => "error", "msg" => "<p>Impossible de récupérer cet événement ($idEvent) sur WeezEvent</p>"];
+            }
+            elseif (empty($users)) {
+                $msg = ["type" => "error", "msg" => "<p><p>Aucun utilisateur trouvé en base pour cet événement. Merci d'effectuer la synchronistation avant la génération des badges.</p>"];
+            }
+            else {
+                $url = plugin_dir_url(__FILE__);
+                $filename = $utils->buildEventBadges($users, $event, $url);
+                if (!empty($filename)) {
+                    echo '<a id="htmlBadges" target="_blank" href="'.$url.$filename.'">&nbsp;</a>';
+                }
+            }
         }
     }
     else {
@@ -127,6 +152,7 @@ if (!empty($events)) {
                             <?php if (!empty($evt->participants)) { ?>
                                 <a href="/wp-admin/admin.php?page=ccsync-page&a=u&e=<?=$evt->id;?>" >Synchroniser</a>
                                 <a href="/wp-admin/admin.php?page=ccsync-page&a=d&e=<?=$evt->id;?>" >Exporter</a>
+                                <a href="/wp-admin/admin.php?page=ccsync-page&a=b&e=<?=$evt->id;?>" >Badges</a>
                             <?php } ?>
                         </td>
                     </tr>
@@ -140,16 +166,16 @@ else {
     <p>Aucun événement prévu pour le moment !</p>
 <?php } 
 
-if (!empty($csvFile)) {
 ?>
-    <script type="text/javascript">
-        jQuery(document).ready(function() {
-           var csvFile = jQuery('#csvParticipants');
-           console.log(csvFile);
-           if (csvFile.length > 0) {
-//               csvFile.trigger('click');
-               csvFile[0].click();
-           }
-        });
-    </script>
-<?php } ?>
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        var csvFile = jQuery('#csvParticipants');
+        if (csvFile.length > 0) {
+            csvFile[0].click();
+        }
+        var htmlFile = jQuery('#htmlBadges');
+        if (htmlFile.length > 0) {
+            htmlFile[0].click();
+        }
+    });
+</script>

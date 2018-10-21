@@ -298,8 +298,8 @@ class Utils
             $directory = plugin_dir_path(__FILE__).'/../../';
             $eventKeys = ["[[BADGE_LEFT]]", "[[BADGE_RIGHT]]", "[[EVENT]]"];
             $userKeys = ["[[LASTNAME]]", "[[FIRSTNAME]]", "[[FUNCTION]]"];
-            $badgeLeft = esc_url($url.'images/badge-left.jpg');
-            $badgeRight = esc_url($url.'images/badge-right.jpg');
+            $badgeLeft = esc_url($url.'images/fond-badge.svg');
+            $badgeRight = esc_url($url.'images/fond-badge.svg');
             $template = file_get_contents($directory."/views/template-badges.html");
             $badgeTpl = file_get_contents($directory."/views/partials/badge.html");
             if (file_exists($directory . "/" . $filename)) {

@@ -60,4 +60,10 @@
     .badges .badge:nth-child(2n) {
         page-break-after: always;
     }
+    .badge .content > span {
+        color: #ffffff;
+        display: block;
+        text-align: center;
+        -webkit-print-color-adjust: exact !important;
+    }
 }

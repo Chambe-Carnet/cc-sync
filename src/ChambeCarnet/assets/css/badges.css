@@ -10,8 +10,8 @@
 }
 .badge .badge-part {
     position: relative;
-    width: 170px;
-    height: 240px;
+    width: 6cm;
+    height: 8.5cm;
 }
 .badge .badge-part img {
     max-width: 100%;
@@ -32,21 +32,21 @@
 .badge .content > span.lastname {
     font-family: 'BlanchCaps', sans-serif;
     text-transform: uppercase;
-    font-size: 3em;
-    line-height: 35px;
+    font-size: 4em;
+    line-height: 50px;
     margin-top: 20%;
 }
 .badge .content > span.firstname {
     font-family: 'BlanchCaps', sans-serif;
     text-transform: uppercase;
-    font-size: 2.5em;
-    line-height: 25px;
+    font-size: 3em;
+    line-height: 35px;
 }
 .badge .content > span.function {
     font-size: 12px;
     font-weight: 300;
     font-style: italic;
-    margin-top: 7px;
+    margin-top: 10px;
 }
 .badge .content > span.event {
     font-weight: 600;
@@ -57,7 +57,7 @@
     bottom: 21%;
 }
 @media print {
-    .badges .badge:nth-child(3n) {
+    .badges .badge:nth-child(2n) {
         page-break-after: always;
     }
 }

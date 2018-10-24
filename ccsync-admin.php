@@ -2,6 +2,11 @@
 require __DIR__.'/vendor/autoload.php';
 require __DIR__.'/../../../cc-config.php';
 
+define('CC_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('CC_PLUGIN_DIR_SRC', plugin_dir_path(__FILE__).'src/ChambeCarnet/');
+define('CC_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('CC_PLUGIN_URL_ASSETS', plugin_dir_url(__FILE__).'src/ChambeCarnet/assets/');
+
 $idEvent = !empty($_GET['e']) ? $_GET['e'] : null;
 $actionEvent = !empty($_GET['a']) ? $_GET['a'] : null;
 $newUsers = 0;
@@ -51,10 +56,9 @@ if (!empty($idEvent) && !empty($actionEvent)) {
                 $msg = ["type" => "error", "msg" => "<p><p>Aucun utilisateur trouvé en base pour cet événement. Merci d'effectuer la synchronistation avant la génération des badges.</p>"];
             }
             else {
-                $url = plugin_dir_url(__FILE__);
-                $filename = $utils->buildEventBadges($users, $event, $url);
+                $filename = $utils->buildEventBadges($users, $event);
                 if (!empty($filename)) {
-                    echo '<a id="htmlBadges" target="_blank" href="'.$url.$filename.'">&nbsp;</a>';
+                    echo '<a id="htmlBadges" target="_blank" href="'.CC_PLUGIN_URL.$filename.'">&nbsp;</a>';
                 }
             }
         }

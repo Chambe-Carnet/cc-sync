@@ -285,9 +285,8 @@ class Utils
      * Build file with all badges for on event
      * @param array $listIds
      * @param object $event
-     * @param string $url
      */
-    public function buildEventBadges($listIds, $event, $url)
+    public function buildEventBadges($listIds, $event)
     {
         $eTitle = !empty($event) && !empty($event->title) ? $event->title : null;
         if (!empty($listIds) && !empty($eTitle)) {
@@ -295,20 +294,18 @@ class Utils
              * Initialisation des variables utiles
              */
             $filename = "badges.html";
-            $directory = plugin_dir_path(__FILE__).'/../../';
-            $eventKeys = ["[[BADGE_LEFT]]", "[[BADGE_RIGHT]]", "[[EVENT]]"];
+            $eventKeys = ["[[BADGE]]", "[[EVENT]]"];
             $userKeys = ["[[LASTNAME]]", "[[FIRSTNAME]]", "[[FUNCTION]]"];
-            $badgeLeft = esc_url($url.'images/fond-badge.svg');
-            $badgeRight = esc_url($url.'images/fond-badge.svg');
-            $template = file_get_contents($directory."/views/template-badges.html");
-            $badgeTpl = file_get_contents($directory."/views/partials/badge.html");
-            if (file_exists($directory . "/" . $filename)) {
-                unlink($directory . "/" . $filename);
+            $badge = esc_url(CC_PLUGIN_URL_ASSETS.'images/fond-badge.svg');
+            $template = file_get_contents(CC_PLUGIN_DIR_SRC."views/template-badges.html");
+            $badgeTpl = file_get_contents(CC_PLUGIN_DIR_SRC."views/partials/badge.html");
+            if (file_exists(CC_PLUGIN_DIR . $filename)) {
+                unlink(CC_PLUGIN_DIR . $filename);
             }
             /**
              * Préparation du badge en remplaçant le ontenu commun à chaque badge
              */
-            $badgeModel = str_replace($eventKeys, [$badgeLeft, $badgeRight, $eTitle], $badgeTpl);
+            $badgeModel = str_replace($eventKeys, [$badge, $eTitle], $badgeTpl);
             $listBadges = "";
             /**
              * Construction du badge pour chaque participant
@@ -327,8 +324,10 @@ class Utils
              * Création du fichier contenant la liste des badges
              */
             if (!empty($listBadges)) {
-                $template = str_replace("[[BADGES_LIST]]", $listBadges, $template);
-                file_put_contents($directory."/".$filename, $template);
+                $listKeys = ["[[CSS_FILE]]", "[[BADGES_LIST]]"];
+                $cssFile = esc_url(CC_PLUGIN_URL_ASSETS.'css/badges.css');
+                $template = str_replace($listKeys, [$cssFile, $listBadges], $template);
+                file_put_contents(CC_PLUGIN_DIR.$filename, $template);
                 return $filename;
             }
         }

@@ -295,7 +295,7 @@ class Utils
              */
             $filename = "badges.html";
             $eventKeys = ["[[BADGE]]", "[[EVENT]]"];
-            $userKeys = ["[[LASTNAME]]", "[[FIRSTNAME]]", "[[FUNCTION]]"];
+            $userKeys = ["[[LASTNAME]]", "[[FIRSTNAME]]", "[[COMPANY]]", "[[FUNCTION]]"];
             $badge = esc_url(CC_PLUGIN_URL_ASSETS.'images/fond-badge.svg');
             $template = file_get_contents(CC_PLUGIN_DIR_SRC."views/template-badges.html");
             $badgeTpl = file_get_contents(CC_PLUGIN_DIR_SRC."views/partials/badge.html");
@@ -315,8 +315,9 @@ class Utils
                 if (!empty($userMeta) && !empty($userMeta->last_name) && !empty($userMeta->first_name)) {
                     $nom = mb_convert_case($userMeta->last_name, MB_CASE_TITLE, 'UTF-8');
                     $prenom = mb_convert_case($userMeta->first_name, MB_CASE_TITLE, 'UTF-8');
+                    $entreprise = !empty($userMeta->entreprise) ? mb_convert_case($userMeta->entreprise, MB_CASE_TITLE, 'UTF-8') : '';
                     $profession = !empty($userMeta->profession) ? mb_convert_case($userMeta->profession, MB_CASE_TITLE, 'UTF-8') : '';
-                    $tmp = str_replace($userKeys, [$nom, $prenom, $profession], $badgeModel);
+                    $tmp = str_replace($userKeys, [$nom, $prenom, $entreprise, $profession], $badgeModel);
                     $listBadges .= $tmp;
                 }
             }

@@ -29,29 +29,30 @@
     text-align: center;
     -webkit-print-color-adjust: exact;
 }
-.badge .content > span.lastname {
+.badge .content > span.firstname {
     font-family: 'BlanchCaps', sans-serif;
     text-transform: uppercase;
-    font-size: 4em;
+    font-size: 4.5em;
     line-height: 50px;
     margin-top: 20%;
 }
-.badge .content > span.firstname {
+.badge .content > span.lastname {
     font-family: 'BlanchCaps', sans-serif;
     text-transform: uppercase;
     font-size: 3em;
     line-height: 35px;
     margin-bottom: 10px;
 }
-.badge .content > span.company,
 .badge .content > span.function {
+    margin-top: 20px;
     font-size: 12px;
     font-weight: 300;
     font-style: italic;
 }
-.badge .content > span.function {
-    margin-top: 5px;
-    font-weight: 600;
+.badge .content > span.company {
+  font-size: 12px;
+  font-weight: 600;
+  font-style: italic;
 }
 .badge .content > span.event {
     font-weight: 600;

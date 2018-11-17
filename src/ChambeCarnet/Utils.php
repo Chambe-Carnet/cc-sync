@@ -296,7 +296,7 @@ class Utils
             $filename = "badges.html";
             $eventKeys = ["[[BADGE]]", "[[EVENT]]"];
             $userKeys = ["[[LASTNAME]]", "[[FIRSTNAME]]", "[[COMPANY]]", "[[FUNCTION]]"];
-            $badge = esc_url(CC_PLUGIN_URL_ASSETS.'images/fond-badge.svg');
+            $badge = esc_url(CC_PLUGIN_URL_ASSETS.'images/fond-badge.jpg');
             $template = file_get_contents(CC_PLUGIN_DIR_SRC."views/template-badges.html");
             $badgeTpl = file_get_contents(CC_PLUGIN_DIR_SRC."views/partials/badge.html");
             if (file_exists(CC_PLUGIN_DIR . $filename)) {

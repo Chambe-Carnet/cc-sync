@@ -63,7 +63,7 @@
     bottom: 21%;
 }
 @media print {
-    .badges .badge:nth-child(2n) {
+    .badges .badge:nth-child(3n) {
         page-break-after: always;
     }
     .badge .content > span {

@@ -8,8 +8,8 @@
         }
     },
     "require": {
-        "guzzlehttp/guzzle": "^6.2",
-        "symfony/options-resolver": "^3.1"
+        "guzzlehttp/guzzle": "^7.4",
+        "symfony/options-resolver": "^7.1"
     },
     "license": "MIT",
     "authors": [
